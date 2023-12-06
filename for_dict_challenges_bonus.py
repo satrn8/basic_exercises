@@ -66,5 +66,69 @@ def generate_chat_history():
     return messages
 
 
+def max_message_id(dates):
+    # Вывести айди пользователя, который написал больше всех сообщений
+    number = []  # добавляю все "sent_by" - количество отправленных сообщений пользователем
+    for user in dates:
+        sent_message = user["sent_by"]
+        number.append(sent_message)
+    max_sent = max(number)  # максимальное значение
+
+    id_send = {}  # создаю новый словарь, в него добавлю id пользователя и количество отправленных им сообщений
+    for ui in dates:
+        ui2 = ui["id"]
+        sent2 = ui["sent_by"]
+        id_send[ui2] = sent2
+
+    for key, value in id_send.items():  # перебираю ключи по значениям, сравнивая значения с максимальным количеством отправленных сообщений
+        if value == max_sent:
+            print(f"{key} пользователь который написал больше всех сообщений")  # вывожу пользователей, которые отправили сообщения совпадающее с максимально полученным значением по всем пользователям
+
+
+def max_see_id(dates):
+    # Вывести айди пользователей, сообщения которых видело больше всего уникальных пользователей
+    number = []
+    id_seen = {}
+
+    for user in dates:
+        ui2 = user["id"]
+        sent_message = user["seen_by"]
+        len_seen_messages = len(sent_message)
+        id_seen[ui2] = len_seen_messages
+        number.append(len(sent_message))
+    max_number = max(number)
+
+    for key, value in id_seen.items():  # перебираю ключи по значениям, сравнивая значения с максимальным количеством отправленных сообщений
+        if value == max_number:
+            print(f"{key} пользователь, сообщения которого видело больше всего уникальных пользователей.")  # вывожу пользователей, которые отправили сообщения совпадающее с максимально полученным значением по всем пользователям
+
+
+def time_messages(dates):
+    # Определить, когда в чате больше всего сообщений: утром (до 12 часов), днём (12-18 часов) или вечером (после 18 часов)
+    before_noon = 0
+    after_noon = 0
+    evening = 0
+    for user in dates:
+        time_user = user["sent_at"]
+        hour_answer = time_user.time()
+        if hour_answer < datetime.time(hour=12, minute=00, second=00, microsecond=0, tzinfo=None, fold=0):
+            before_noon += 1
+        elif hour_answer > datetime.time(hour=12, minute=00, second=00, microsecond=0, tzinfo=None, fold=0) and hour_answer < datetime.time(hour=18, minute=00, second=00, microsecond=0, tzinfo=None, fold=0):
+            after_noon += 1
+        else:
+            evening += 1
+
+    if before_noon > after_noon and before_noon > evening:
+        print(f"Больше всего сообщений было утром {before_noon}")
+    elif after_noon > before_noon and after_noon > evening:
+        print(f"Больше всего сообщений было днем {after_noon}")
+    else:
+        print(f"Больше всего сообщений было вечером {evening}")
+
+
+
 if __name__ == "__main__":
-    print(generate_chat_history())
+    dates = generate_chat_history()
+    max_message_id(dates)
+    max_see_id(dates)
+    time_messages(dates)
